@@ -34,6 +34,7 @@ jobs:
         src/scripts/install_kind.sh
         src/scripts/install_podman.sh
         src/scripts/install_singularity.sh
+        src/scripts/install_drone.sh
         python -m pip install --upgrade pip
         pip install coverage
         pip install -e src/[dev]
