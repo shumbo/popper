@@ -179,6 +179,7 @@ class TestTaskTranslator(PopperTest):
     def test_translate(self):
         tt = TaskTranslator()
 
+        # translation of locally executed steps
         popper_wf_sh = Box(
             {
                 "steps": [
@@ -212,6 +213,27 @@ class TestTaskTranslator(PopperTest):
                     },
                 }
             ),
+        )
+
+        # translation of workflow which has a step with the id "default"
+        popper_wf_default = Box(
+            {
+                "steps": [
+                    {
+                        "id": "default",
+                        "uses": "sh",
+                        "runs": ["echo"],
+                        "args": ["hello"],
+                    }
+                ],
+            }
+        )
+        task_default = tt.translate(popper_wf_default)
+        self.assertTrue(
+            Box.from_yaml(task_default)["tasks"]["default"]["cmds"][0]["task"].count(
+                "popper-default-"
+            )
+            > 0
         )
 
         popper_wf_docker = Box(

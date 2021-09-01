@@ -1,6 +1,7 @@
 from box.box import Box
 from popper.translators.translator import WorkflowTranslator
 from shlex import quote
+import uuid
 
 
 # helper function to quote and join strings
@@ -13,6 +14,8 @@ class TaskTranslator(WorkflowTranslator):
         super().__init__()
 
     def translate(self, wf):
+        self._rename_default(wf)
+
         box = Box(version="3", tasks={}, vars={})
 
         box["vars"] = {
@@ -50,6 +53,12 @@ class TaskTranslator(WorkflowTranslator):
         }
 
         return box.to_yaml()
+
+    # if there is a step whose id is "default", rename the step so it won't conflict with the Task's default task name
+    def _rename_default(self, wf):
+        for step in wf["steps"]:
+            if step.id == "default":
+                step.id = f"popper-default-{uuid.uuid4()}"
 
     # translate a step
     def _translate_step(self, step, env):
